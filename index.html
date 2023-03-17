@@ -24,6 +24,8 @@
 			height: auto;
 			object-fit: contain;
 			cursor: pointer;
+			left: 0;
+			top: 0;
 		}
 	</style>
 </head>
@@ -61,4 +63,45 @@
 			img.addEventListener('touchstart', dragStart, { passive: true });
 			img.addEventListener('touchend', dragEnd, { passive: true });
 			img.addEventListener('touchmove', drag, { passive: true });
-	
+		});
+
+		function dragStart(e) {
+			if (e.type === "touchstart") {
+				initialX = e.touches[0].clientX - xOffset;
+				initialY = e.touches[0].clientY - yOffset;
+			} else {
+				initialX = e.clientX - xOffset;
+				initialY = e.clientY - yOffset;
+			}
+
+			if (e.target === activeItem) {
+				activeItem.style.zIndex = 1;
+			} else {
+				activeItem = e.target;
+				activeItem.style.zIndex = 1;
+			}
+
+			currentX = initialX;
+			currentY = initialY;
+
+			activeItem.style.left = currentX + "px";
+			activeItem.style.top = currentY + "px";
+		}
+
+		function dragEnd(e) {
+			initialX = currentX;
+			initialY = currentY;
+
+			activeItem.style.zIndex = 0;
+			activeItem = null;
+		}
+
+		function drag(e) {
+			if (activeItem !== null) {
+				e.preventDefault();
+
+				if (e.type === "touchmove") {
+					currentX = e.touches[0].clientX - initialX;
+					currentY = e.touches[0].clientY - initialY;
+				} else {
+					currentX = e.clientX -
