@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Frei bewegliche Bilder</title>
+	<title>Frei bewegliches Bild</title>
 	<style>
 		.container {
 			position: relative;
@@ -22,18 +22,12 @@
 			transform: translate(-50%, -50%);
 			width: 150px;
 			height: 150px;
+			background-image: url('1.png');
 			background-size: contain;
+			background-position: center;
 			background-repeat: no-repeat;
 			cursor: grab;
 			user-select: none;
-		}
-
-		#image1 {
-			background-image: url('1.png');
-		}
-
-		#image2 {
-			background-image: url('2.png');
 		}
 
 		.image:active {
@@ -43,8 +37,7 @@
 </head>
 <body>
 	<div class="container">
-		<div class="image" id="image1"></div>
-		<div class="image" id="image2"></div>
+		<div class="image"></div>
 	</div>
 
 	<script>
@@ -56,18 +49,16 @@
 		let xOffset = 0;
 		let yOffset = 0;
 
-		const images = document.querySelectorAll('.image');
+		const image = document.querySelector('.image');
 
-		images.forEach(image => {
-			image.addEventListener('mousedown', dragStart);
-			image.addEventListener('touchstart', dragStart);
+		image.addEventListener('mousedown', dragStart);
+		image.addEventListener('touchstart', dragStart);
 
-			image.addEventListener('mouseup', dragEnd);
-			image.addEventListener('touchend', dragEnd);
+		image.addEventListener('mouseup', dragEnd);
+		image.addEventListener('touchend', dragEnd);
 
-			image.addEventListener('mousemove', drag);
-			image.addEventListener('touchmove', drag);
-		});
+		image.addEventListener('mousemove', drag);
+		image.addEventListener('touchmove', drag);
 
 		function dragStart(e) {
 			if (e.type === 'touchstart') {
@@ -78,7 +69,7 @@
 				initialY = e.clientY - yOffset;
 			}
 
-			if (e.target === this) {
+			if (e.target === image) {
 				isDragging = true;
 			}
 		}
@@ -105,7 +96,7 @@
 				xOffset = currentX;
 				yOffset = currentY;
 
-				setTranslate(currentX, currentY, this);
+				setTranslate(currentX, currentY, image);
 			}
 		}
 
