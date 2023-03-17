@@ -1,72 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Buchstabengitter</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Frei bewegliche Bilder</title>
 	<style>
-		body {
-			background-image: url("Buchstabengitter quer.png");
+		.container {
+			position: relative;
+			width: 100%;
+			height: 0;
+			padding-bottom: 75%;
+			background-image: url('Buchstabengitter quer.jpg');
 			background-size: cover;
-			background-repeat: no-repeat;
 			background-position: center;
 		}
-		.img-container {
+
+		.image {
 			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			display: flex;
-			flex-wrap: wrap;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 150px;
+			height: 150px;
+			background-size: contain;
+			background-repeat: no-repeat;
+			cursor: grab;
+			user-select: none;
 		}
-		.img-container img {
-			position: absolute;
-			width: 33.33%;
-			height: auto;
-			object-fit: contain;
-			cursor: pointer;
-			left: 0;
-			top: 0;
+
+		#image1 {
+			background-image: url('1.png');
+		}
+
+		#image2 {
+			background-image: url('2.png');
+		}
+
+		.image:active {
+			cursor: grabbing;
 		}
 	</style>
 </head>
 <body>
-	<div class="img-container">
-		<img src="1.png">
-		<img src="2.png">
-		<img src="3.png">
-		<img src="4.png">
-		<img src="5.png">
-		<img src="6.png">
-		<img src="7.png">
-		<img src="8.png">
-		<img src="9.png">
+	<div class="container">
+		<div class="image" id="image1"></div>
+		<div class="image" id="image2"></div>
 	</div>
 
 	<script>
-		let activeItem = null;
-		let initialX;
-		let initialY;
+		let isDragging = false;
 		let currentX;
 		let currentY;
+		let initialX;
+		let initialY;
 		let xOffset = 0;
 		let yOffset = 0;
 
-		// event listeners for mouse interactions
-		document.querySelectorAll('.img-container img').forEach(img => {
-			img.addEventListener('mousedown', dragStart);
-			img.addEventListener('mouseup', dragEnd);
-			img.addEventListener('mousemove', drag);
-		});
+		const images = document.querySelectorAll('.image');
 
-		// event listeners for touch interactions
-		document.querySelectorAll('.img-container img').forEach(img => {
-			img.addEventListener('touchstart', dragStart, { passive: true });
-			img.addEventListener('touchend', dragEnd, { passive: true });
-			img.addEventListener('touchmove', drag, { passive: true });
+		images.forEach(image => {
+			image.addEventListener('mousedown', dragStart);
+			image.addEventListener('touchstart', dragStart);
+
+			image.addEventListener('mouseup', dragEnd);
+			image.addEventListener('touchend', dragEnd);
+
+			image.addEventListener('mousemove', drag);
+			image.addEventListener('touchmove', drag);
 		});
 
 		function dragStart(e) {
-			if (e.type === "touchstart") {
+			if (e.type === 'touchstart') {
 				initialX = e.touches[0].clientX - xOffset;
 				initialY = e.touches[0].clientY - yOffset;
 			} else {
@@ -74,34 +78,40 @@
 				initialY = e.clientY - yOffset;
 			}
 
-			if (e.target === activeItem) {
-				activeItem.style.zIndex = 1;
-			} else {
-				activeItem = e.target;
-				activeItem.style.zIndex = 1;
+			if (e.target === this) {
+				isDragging = true;
 			}
-
-			currentX = initialX;
-			currentY = initialY;
-
-			activeItem.style.left = currentX + "px";
-			activeItem.style.top = currentY + "px";
 		}
 
 		function dragEnd(e) {
 			initialX = currentX;
 			initialY = currentY;
 
-			activeItem.style.zIndex = 0;
-			activeItem = null;
+			isDragging = false;
 		}
 
 		function drag(e) {
-			if (activeItem !== null) {
+			if (isDragging) {
 				e.preventDefault();
 
-				if (e.type === "touchmove") {
+				if (e.type === 'touchmove') {
 					currentX = e.touches[0].clientX - initialX;
 					currentY = e.touches[0].clientY - initialY;
 				} else {
-					currentX = e.clientX -
+					currentX = e.clientX - initialX;
+					currentY = e.clientY - initialY;
+				}
+
+				xOffset = currentX;
+				yOffset = currentY;
+
+				setTranslate(currentX, currentY, this);
+			}
+		}
+
+		function setTranslate(xPos, yPos, el) {
+			el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+		}
+	</script>
+</body>
+</html>
